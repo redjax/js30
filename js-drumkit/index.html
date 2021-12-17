@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>JS Drumkit</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    
+    <body>
+        <!-- Div for keys on page -->
+        <div class="keys">
+            <!-- 
+                Each key has a keycode, which you can find at http://keycode.info
+                The data-key attribute corresponds to that key's code, and is used
+                by the <script> content to detect the keypress and search for the
+                div with a corresponding data-key value.
+            -->
+
+            <div data-key="65" class="key">
+                <kbd>A</kbd>
+                <span class="sound">class</span>
+            </div>
+
+            <div data-key="83" class="key">
+                <kbd>S</kbd>
+                <span class="sound">hat</span>
+            </div>
+
+            <div data-key="68" class="key">
+                <kbd>D</kbd>
+                <span class="sound">kick</span>
+            </div>
+
+            <div data-key="70" class="key">
+                <kbd>F</kbd>
+                <span class="sound">hat-open</span>
+            </div>
+
+            <div data-key="71" class="key">
+                <kbd>G</kbd>
+                <span class="sound">boom</span>
+            </div>
+
+            <div data-key="72" class="key">
+                <kbd>H</kbd>
+                <span class="sound">ride</span>
+            </div>
+
+            <div data-key="74" class="key">
+                <kbd>J</kbd>
+                <span class="sound">snare</span>
+            </div>
+
+            <div data-key="75" class="key">
+                <kbd>K</kbd>
+                <span class="sound">tom</span>
+            </div>
+
+            <div data-key="76" class="key">
+                <kbd>L</kbd>
+                <span class="sound">tink</span>
+            </div>
+        </div>
+
+        <audio data-key="65" src="sounds/clap.wav"></audio>
+        <audio data-key="83" src="sounds/hihat.wav"></audio>
+        <audio data-key="68" src="sounds/kick.wav"></audio>
+        <audio data-key="70" src="sounds/openhat.wav"></audio>
+        <audio data-key="71" src="sounds/boom.wav"></audio>
+        <audio data-key="72" src="sounds/ride.wav"></audio>
+        <audio data-key="74" src="sounds/snare.wav"></audio>
+        <audio data-key="75" src="sounds/tom.wav"></audio>
+        <audio data-key="76" src="sounds/tink.wav"></audio>
+
+        <script>
+
+            function playSound(e) {  // play audio file matching key code <audio> tag
+                
+                console.log(e.keyCode); // log the key's code to the console
+                
+                // `tag[attribute="${x}"]`, specify tag, select matching keypress via substition
+                const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`); // Find <audio> element which matches 'e'
+                const key = document.querySelector(`.key[data-key="${e.keyCode}"]`); // Find <div/class> which matches 'e'
+                
+                console.log("Audio div: ", audio); // Log value of audio to console
+                console.log("Div matching keypress code: ", key);
+                
+                if(!audio) return; // Stop function if keypress's code does not match a tag/data-key
+                audio.currentTime = 0; // Resets audio if tail > keypress-speed
+                audio.play(); // else, play audio file matching <audio> tag with matching data-key=keycode ('e')
+
+                key.classList.add('playing');  // add .playing CSS class to selected element
+
+            };
+
+            function removeTransition(e) {
+                
+                // Log e to console. You will see a lot of propeties that are a transition,
+                // including "border-right-color", "transform", "box-shadow", etc, but you're only
+                // looking for the property with type 'transitionend'
+                //
+                // You can "view" the properties in browser console by uncommentined the console.log(e); below
+                // console.log(e);
+                if(e.propertyName !== 'transform') return; // skip e property if it's not a transition
+                console.log("Keypress property name (should be 'transform': ", e.propertyName);
+
+                // Remove transision trom 'this', which equals passed var e
+                this.classList.remove('playing'); // Remove "playing" class from e. Basically a reverse
+
+            };
+
+            // Select all elements with CSS class .key on page
+            const keys = document.querySelectorAll('.key');
+            // Loop over each key in keys, run function removeTransition
+            keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+
+            window.addEventListener('keydown', playSound); // when someone presses a key, play corresponding sound
+        
+        </script>
+
+    </body>
+</html>
